@@ -1,0 +1,30 @@
+{
+  "name": "express-instance",
+  "version": "1.0.0",
+  "description": "Fast work-space for express server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "set dev=true&set DEBUG='mqttjs*'& nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Noobmaster69-bug/express-instance.git"
+  },
+  "author": "Uy Son Tran",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Noobmaster69-bug/express-instance/issues"
+  },
+  "homepage": "https://github.com/Noobmaster69-bug/express-instance#readme",
+  "dependencies": {
+    "debug": "^4.3.3",
+    "dotenv": "^16.0.0",
+    "express": "^4.17.3",
+    "morgan": "^1.10.0",
+    "mqtt": "^4.3.6"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  }
+}
