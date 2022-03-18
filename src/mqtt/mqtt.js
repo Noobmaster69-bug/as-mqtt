@@ -1,5 +1,7 @@
 const debug = require("../utils/debug")("mqtt");
 const mqtt = require("mqtt");
+const levelStore = require("mqtt-level-store");
+const manager = levelStore("./mqttMessage/");
 class MQTT {
   workers = {};
   debug = debug;
@@ -8,6 +10,8 @@ class MQTT {
   constructor(host, port = 1883, protocol = "mqtt", ids, option = {}) {
     this.client = mqtt.connect(`${protocol}://${host}:${port}`, {
       ...option,
+      incomingStore: manager.incoming,
+      outgoingStore: manager.outgoing,
     });
     this.client.on("connect", () => {
       this.debug("Connected to broker");

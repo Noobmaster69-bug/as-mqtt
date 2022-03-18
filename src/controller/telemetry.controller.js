@@ -2,15 +2,24 @@ const debug = require("../utils/debug")("mqtt");
 const axios = require("axios");
 const MQTT = require("../mqtt/mqtt");
 let clients;
-axios
-  .get("http://127.0.0.1:33335/as-mqtt/getAll")
-  .then(({ data }) => {
-    clients = data.map(
-      ({ host, port, protocol, ids, ...option }) =>
-        new MQTT(host, port, protocol, ids, option)
-    );
-  })
-  .catch((err) => console.log(err));
+function getMqtt() {
+  axios
+    .get("http://127.0.0.1:33335/as-mqtt/getAll")
+    .then(({ data }) => {
+      clients = data.map(
+        ({ host, port, protocol, ids, ...option }) =>
+          new MQTT(host, port, protocol, ids, option)
+      );
+    })
+    .catch((err) => {
+      if (err.code === "ECONNREFUSED") {
+        setTimeout(() => getMqtt(), 5000);
+      } else {
+        debug(err.message);
+      }
+    });
+}
+getMqtt();
 module.exports = {
   telemetry: function (req, res) {
     const { id, package } = req.body;
