@@ -1,7 +1,8 @@
+"use strict";
 const debug = require("../utils/debug")("mqtt");
 const mqtt = require("mqtt");
-const levelStore = require("mqtt-level-store");
-const manager = levelStore("./mqttMessage/");
+const nedbStore = require("mqtt-nedb-store");
+const manager = nedbStore("./mqttMessage/");
 class MQTT {
   workers = {};
   debug = debug;
@@ -19,7 +20,7 @@ class MQTT {
     this.client.on("message", (topic, message) => {
       this.workers[topic](message);
     });
-    this.pubOption.QoS = option.QoS ? option.QoS : 0;
+    this.pubOption.qos = option.qos ? option.qos : 0;
     this.ids = ids;
   }
   sub(topic, worker, option) {
@@ -34,7 +35,9 @@ class MQTT {
   }
   pub(topic, message, option = this.pubOption) {
     this.client.publish(topic, message, option, (err) => {
+      console.log(topic);
       if (!err) {
+        // console.log(err);
       } else {
         this.debug(err.message);
       }

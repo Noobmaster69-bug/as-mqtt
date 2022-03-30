@@ -24,7 +24,7 @@ module.exports = {
   telemetry: function (req, res) {
     const { id, package } = req.body;
     const client = clients.find((e) => e.isInclude(id));
-    console.log("up/telemetry/" + package.gatewayId);
+    console.log(client.pub);
     client.pub("up/telemetry/" + package.gatewayId, JSON.stringify(package));
     res.sendStatus(200);
   },
