@@ -4,6 +4,6 @@ const app = require("express")();
 require("./src/config/index")();
 require("./src/middleware/index")(app);
 require("./src/routes/index")(app);
-app.listen(process.env.PORT || 10000, () =>
-  debug("core is running on port " + (process.env.PORT || 10000))
+app.listen(process.env.PORT || 33335, () =>
+  debug("core is running on port " + (process.env.PORT || 33335))
 );
