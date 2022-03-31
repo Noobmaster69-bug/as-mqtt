@@ -1,5 +1,5 @@
 let clients;
-(function getMqtt() {
+function getMqtt() {
   const debug = require("../utils/debug")("mqtt");
   const axios = require("axios");
   const MQTT = require("../mqtt/mqtt");
@@ -18,12 +18,20 @@ let clients;
         debug(err.message);
       }
     });
-})();
+}
+getMqtt();
 module.exports = {
   telemetry: function (req, res) {
     const { id, package } = req.body;
     const client = clients.find((e) => e.isInclude(id));
     client.pub("up/telemetry/" + package.gatewayId, JSON.stringify(package));
     res.sendStatus(200);
+  },
+  newClient: function (req, res) {
+    for (const client of clients) {
+      client.end();
+    }
+    getMqtt();
+    res.send(200);
   },
 };

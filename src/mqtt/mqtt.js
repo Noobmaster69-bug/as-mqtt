@@ -49,6 +49,9 @@ class MQTT {
       }
     });
   }
+  end() {
+    this.client.end();
+  }
   isInclude(id) {
     return this.ids.indexOf(id) >= 0 ? true : false;
   }
