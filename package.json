@@ -1,0 +1,38 @@
+{
+  "name": "ds-modbus",
+  "version": "1.0.0",
+  "description": "device service modbus",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Noobmaster69-bug/ds-modbus.git"
+  },
+  "keywords": [
+    "IoT",
+    "Edge",
+    "device",
+    "service"
+  ],
+  "author": "Uy Son Tran",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Noobmaster69-bug/ds-modbus/issues"
+  },
+  "homepage": "https://github.com/Noobmaster69-bug/ds-modbus#readme",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "debug": "^4.3.4",
+    "dotenv": "^16.0.0",
+    "express": "^4.18.1",
+    "jsmodbus": "^4.0.6",
+    "morgan": "^1.10.0",
+    "mqtt": "^4.3.7",
+    "mqtt-nedb-store": "^0.1.1",
+    "p-queue": "^7.2.0",
+    "serialport": "^10.4.0"
+  }
+}
