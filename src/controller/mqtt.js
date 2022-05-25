@@ -48,12 +48,14 @@ module.exports = {
     client.pub("up/provision/" + topic, JSON.stringify(package));
     client.sub("down/provision/" + topic, (message) => {
       const body = JSON.parse(message);
+      console.log(body)
+        const axios = require('axios')
       axios
-        .post("http://localhost:33333/provision/confirm", {
-          ...body,
-        })
-        .then(data)
-        .catch((err) => console.log(err));
+        .post("http://localhost:33333/devices/provision/confirm", 
+          body,
+        )
+        .then((data) => data)
+        .catch((err) => err);
     });
     res.sendStatus(200);
   },
