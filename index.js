@@ -1,10 +1,17 @@
-require("dotenv").config();
-const { log, error } = require("./src/utility/debug")("ds-mqtt: ");
 const app = require("express")();
-
 (async function () {
-  await require("./src/middleware")(app);
-  await require("./src/router")(app);
-  const port = process.env.PORT || 33335;
-  app.listen(port, () => log("running on port " + port));
+  //config middleware
+  require("./src/middleware")(app);
+  //config route
+  require("./src/router")(app);
+  //run server
+  app.listen(33335, () => {
+    console.log("ds-mqtt is running on port 33335");
+  });
 })();
+// const mqtt = require("./src/mqtt");
+// mqtt.publish(
+//   { id: 1, host: "broker.hivemq.com", protocol: "mqtt" },
+//   "test12",
+//   "1"
+// );

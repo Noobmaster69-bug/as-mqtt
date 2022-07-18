@@ -1,60 +1,94 @@
-const debug = require("../utility/debug")("ds-mqtt: ").log;
-const mqtt = require("mqtt");
-const nedbStore = require("mqtt-nedb-store");
-const manager = nedbStore("./mqttMessage/");
 class MQTT {
-  workers = {};
-  ids = [];
-  pubOption = {};
-  constructor(host, port = 1883, protocol = "mqtt", ids, option = {}) {
-    this.client = mqtt.connect(`${protocol}://${host}:${port}`, {
-      ...option,
-      incomingStore: manager.incoming,
-      outgoingStore: manager.outgoing,
-    });
-    this.client.on("connect", () => {
-      debug("Connected to broker");
-    });
-    this.client.on("message", (topic, message) => {
-      this.workers[topic](message);
-    });
-    this.pubOption.qos = option.qos ? option.qos : 0;
-    this.ids = ids;
-  }
-  sub(topic, worker, option) {
-    this.client.subscribe(topic, option, (err) => {
-      if (!err) {
-        debug("subcribed to " + topic + " topic");
-        this.workers[topic] = worker;
-      } else {
-        debug(err.message);
+  /**
+   * client: {
+   *  option: client connection option
+   *    {
+   *      id: 'client' id, id to manage client in this class, not id in client of mqtt library
+   *      host: client ip address or domain name, Ex: "broker.hivemq.com"
+   *      protocol: connection protocol, one of these values: ["mqtt"]
+   *    }
+   *  instance: mqtt client instance
+   *
+   * }
+   */
+  #clients = [];
+
+  /**
+   * publish to broker
+   * @param {object} option see client option above
+   * @param {string} topic
+   * @param {string} message
+   */
+  async publish(option, topic, message) {
+    return new Promise(async (resolve, reject) => {
+      let client = this.#queryClient(option);
+      if (client === undefined) {
+        client = await this.#newClient(option);
       }
+      client.instance.publish(topic, message, { qos: 0 }, (err) => {
+        if (err) {
+          reject(err);
+        } else resolve();
+      });
     });
   }
-  pub(topic, message, option = this.pubOption) {
-    this.client.publish(topic, message, option, (err) => {
-      if (!err) {
-      } else {
-        debug(err.message);
-      }
+
+  /**
+   * find client which being managed
+   * @param {object} option
+   * @returns {client}
+   */
+  #queryClient(option) {
+    const _ = require("lodash");
+    const client = this.#clients.find((cl) => _.isEqual(option, cl.option));
+    return client;
+  }
+  /**
+   * create new client
+   * @param {object} option
+   * @returns
+   */
+  async #newClient(option) {
+    const mqtt = require("./library");
+    const NeDBStore = require("mqtt-nedb-store");
+
+    const { id, host, protocol = "mqtt", ...others } = option;
+    //create mqtt connection
+    let client;
+    if (id) {
+      //if id exist, connect to broker with local store
+
+      //create store with path is client id, this id is unique
+      const manager = NeDBStore(`./store/${id}`);
+
+      //connect to mqtt broker with store
+      client = mqtt.connect(`${protocol}://${host}`, {
+        ...others,
+        outgoingStore: manager.outgoing,
+        incomingStore: manager.incoming,
+      });
+    } else {
+      //if id not exist, connect to broker witout local store
+      client = mqtt.connect(`${protocol}://${host}`, {
+        ...others,
+      });
+    }
+    //on connect, push connection option and client to #clients to manages clients
+    client.on("connect", () => {
+      console.log("connected to broker");
     });
-  }
-  unsub(topic, option) {
-    this.client.unsubscribe(topic, option, (err) => {
-      if (!err) {
-        debug("unsubcribed to " + topic + " topic");
-        delete this.workers[topic];
-      } else {
-        debug(err.message);
-      }
+    //on error
+    client.on("offline", () => {
+      console.log("offline");
     });
-  }
-  end() {
-    this.client.end();
-  }
-  isInclude(id) {
-    return this.ids.indexOf(id) >= 0 ? true : false;
+    client.on("end", () => {
+      console.log("end");
+    });
+    this.#clients.push({
+      option,
+      instance: client,
+    });
+    return this.#clients[this.#clients.length - 1];
   }
 }
-
-module.exports = MQTT;
+module.exports = new MQTT();
