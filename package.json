@@ -1,15 +1,19 @@
 {
-  "name": "ds-modbus",
+  "name": "mqtt",
   "version": "1.0.0",
-  "description": "device service modbus",
+  "description": "device service mqtt",
   "main": "index.js",
+  "bin": "./index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon index.js"
+    "start": "nodemon --inspect index.js",
+    "setup_armhf": "export AR=\"arm-linux-gnueabihf-ar\" && export CC=\"arm-linux-gnueabihf-gcc\" && export CXX=\"arm-linux-gnueabihf-g++\" &&export LINK=\"arm-linux-gnueabihf-g++\"&&npm install --build-from-source --target_arch=arm --omit=dev",
+    "setup": "npm install --omit=dev",
+    "build": "rm -f -r ./dist && DOCKER_BUILDKIT=1 docker build --output dist . --no-cache=true ",
+    "clean": "rm -f -r ./dist & rm -f -r ./node_modules"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Noobmaster69-bug/ds-modbus.git"
+    "url": "git+https://github.com/Noobmaster69-bug/ds-mqtt.git"
   },
   "keywords": [
     "IoT",
@@ -20,9 +24,9 @@
   "author": "Uy Son Tran",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Noobmaster69-bug/ds-modbus/issues"
+    "url": "https://github.com/Noobmaster69-bug/ds-mqtt/issues"
   },
-  "homepage": "https://github.com/Noobmaster69-bug/ds-modbus#readme",
+  "homepage": "https://github.com/Noobmaster69-bug/ds-mqtt#readme",
   "dependencies": {
     "commist": "^1.0.0",
     "concat-stream": "^2.0.0",
@@ -37,6 +41,7 @@
     "morgan": "^1.10.0",
     "mqtt-nedb-store": "^0.1.1",
     "mqtt-packet": "^6.8.0",
+    "mqtt-wildcard": "^3.0.9",
     "number-allocator": "^1.0.9",
     "pump": "^3.0.0",
     "readable-stream": "^3.6.0",
@@ -45,5 +50,13 @@
     "split2": "^3.1.0",
     "ws": "^7.5.5",
     "xtend": "^4.0.2"
+  },
+  "pkg": {
+    "script": "*.js",
+    "assets": "node_modules/@serialport/bindings-cpp/prebuilds/**/*.node",
+    "targets": [
+      "node16-linux-armv7"
+    ],
+    "outputPath": "dist"
   }
 }

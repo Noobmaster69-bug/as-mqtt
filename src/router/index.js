@@ -1,3 +1,4 @@
 module.exports = function (app) {
-  app.use("/provision", require("./telemetry.router")());
+  app.use("/telemetry", require("./telemetry.router")());
+  app.use("/provision", require("./provision.router")());
 };

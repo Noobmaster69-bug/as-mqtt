@@ -9,9 +9,3 @@ const app = require("express")();
     console.log("ds-mqtt is running on port 33335");
   });
 })();
-// const mqtt = require("./src/mqtt");
-// mqtt.publish(
-//   { id: 1, host: "broker.hivemq.com", protocol: "mqtt" },
-//   "test12",
-//   "1"
-// );
