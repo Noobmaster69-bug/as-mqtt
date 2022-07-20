@@ -1,9 +1,11 @@
-const debug = require("./src/utils/debug")("app");
 const app = require("express")();
-
-require("./src/config/index")();
-require("./src/middleware/index")(app);
-require("./src/routes/index")(app);
-app.listen(process.env.PORT || 33335, () =>
-  debug("core is running on port " + (process.env.PORT || 33335))
-);
+(async function () {
+  //config middleware
+  require("./src/middleware")(app);
+  //config route
+  require("./src/router")(app);
+  //run server
+  app.listen(33335, () => {
+    console.log("ds-mqtt is running on port 33335");
+  });
+})();
