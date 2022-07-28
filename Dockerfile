@@ -5,7 +5,6 @@ COPY .. /tmp/ds-mqtt
 WORKDIR /tmp/ds-mqtt
 RUN npm run clean
 RUN sh compile.sh
-RUN cat package.json | grep -A 3 "targets" | grep node | cut -d '-' -f 3| cut -d '"' -f1
 WORKDIR /tmp/
 RUN tar -zcvf DSmqtt.tar.gz ds-mqtt
 FROM scratch AS export-stage

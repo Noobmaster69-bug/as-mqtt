@@ -1,6 +1,6 @@
 "use strict";
 const MAX_QUEQUE = 100;
-const STORE_DELAY = 1000;
+const STORE_DELAY = 0;
 /**
  * Module dependencies
  */
