@@ -16,6 +16,7 @@ class MQTTClient extends EventEmitter {
    */
   constructor(option) {
     super();
+    console.log("configing new one");
     const mqtt = require("./library");
     const NeDBStore = require("mqtt-nedb-store");
 
@@ -35,7 +36,7 @@ class MQTTClient extends EventEmitter {
       client = mqtt.connect(`${protocol}://${host}`, {
         ...others,
         outgoingStore: manager.outgoing,
-        // incomingStore: manager.incoming,
+        incomingStore: manager.incoming,
       });
     } else {
       //if id not exist, connect to broker witout local store
@@ -46,7 +47,18 @@ class MQTTClient extends EventEmitter {
 
     //store client
     this.#client = client;
-
+    client.on("connect", () => {
+      console.log("connected to broker " + `${protocol}://${host}`);
+    });
+    client.on("error", () => {
+      console.log("err");
+    });
+    client.on("close", () => {
+      console.log("close");
+    });
+    client.on("disconnect", () => {
+      console.log("disconnect to broker " + `${protocol}://${host}`);
+    });
     // when a message arrived
     client.on("message", (topic, message) => {
       const mqttWildcard = require("mqtt-wildcard");
@@ -66,20 +78,10 @@ class MQTTClient extends EventEmitter {
           isMatched = true;
         }
       }
-
       //unsubcribe if topic dont have listener
       if (!isMatched) {
         this.unsub(topic);
       }
-      client.on("connect", () => {
-        console.log("connected to broker");
-      });
-      client.on("error", () => {
-        console.log("err");
-      });
-      client.on("close", () => {
-        console.log(close);
-      });
     });
   }
 
@@ -290,7 +292,7 @@ class MQTT {
   #queryClient(option) {
     const _ = require("lodash");
     //find client by id
-    const client = this.#clients.find((cl) => cl.id === option.id);
+    const client = this.#clients.find((cl) => cl.option.id === option.id);
     //compare to client option
     if (client !== undefined) {
       if (_.isEqual(option, client.option)) {

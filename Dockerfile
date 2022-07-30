@@ -1,6 +1,4 @@
 FROM tranuyson/cross-compiler:debian9.13 AS cc
-LABEL stage=builder
-RUN arm-linux-gnueabihf-gcc -v
 COPY .. /tmp/ds-mqtt
 WORKDIR /tmp/ds-mqtt
 RUN npm run clean

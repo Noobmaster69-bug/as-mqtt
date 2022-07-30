@@ -53,7 +53,6 @@
   },
   "pkg": {
     "script": "*.js",
-    "assets": "node_modules/@serialport/bindings-cpp/prebuilds/**/*.node",
     "targets": [
       "node16-linux-armv7"
     ],
