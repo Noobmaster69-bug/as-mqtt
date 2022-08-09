@@ -1,3 +1,20 @@
+/**
+ * Hash option to generate id
+ * @param {*} option
+ */
+function hashOption(option) {
+  const crypto = require("crypto");
+  return crypto.createHash("md5").update(option).digest("hex");
+}
+function sortObject(unordered) {
+  return (ordered = Object.keys(unordered)
+    .sort()
+    .reduce((obj, key) => {
+      obj[key] = unordered[key];
+      return obj;
+    }, {}));
+}
+
 const EventEmitter = require("events");
 
 /**
@@ -16,34 +33,23 @@ class MQTTClient extends EventEmitter {
    */
   constructor(option) {
     super();
-    console.log("configing new one");
     const mqtt = require("./library");
     const NeDBStore = require("mqtt-nedb-store");
 
-    const { id, host, protocol = "mqtt", ...others } = option;
+    const { host, protocol = "mqtt", ...others } = option;
 
     //store option
-    this.option = option;
 
+    this.option = sortObject(option);
+    this.id = hashOption(JSON.stringify(this.option));
     //create mqtt connection
     let client;
-    if (id) {
-      //if id exist, connect to broker with local store
-      //create store with path is client id, this id must be unique
-      const manager = NeDBStore(`./store/${id}`);
-
-      //connect to mqtt broker with store
-      client = mqtt.connect(`${protocol}://${host}`, {
-        ...others,
-        outgoingStore: manager.outgoing,
-        incomingStore: manager.incoming,
-      });
-    } else {
-      //if id not exist, connect to broker witout local store
-      client = mqtt.connect(`${protocol}://${host}`, {
-        ...others,
-      });
-    }
+    const manager = NeDBStore(`./store/${this.id}`);
+    client = mqtt.connect(`${protocol}://${host}`, {
+      ...others,
+      outgoingStore: manager.outgoing,
+      incomingStore: manager.incoming,
+    });
 
     //store client
     this.#client = client;
@@ -292,15 +298,10 @@ class MQTT {
   #queryClient(option) {
     const _ = require("lodash");
     //find client by id
-    const client = this.#clients.find((cl) => cl.option.id === option.id);
+    const id = hashOption(JSON.stringify(sortObject(option)));
+    const client = this.#clients.find((cl) => cl.id === id);
     //compare to client option
-    if (client !== undefined) {
-      if (_.isEqual(option, client.option)) {
-        return client;
-      } else {
-        throw "client id conflict";
-      }
-    }
+    return client;
   }
 
   /**
